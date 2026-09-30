@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Employee {
+  id              String          @id
+  name            String
+  monthlySalary   Float
+  joiningDate     DateTime
+  creditScore     Int?
+  password        String
+  role            String          @default("employee")
+  loans           Loan[]
+  payrollRecords  PayrollRecord[]
+}
+
+model Loan {
+  id                 String    @id
+  employeeId         String
+  employee           Employee  @relation(fields: [employeeId], references: [id])
+  principal          Float
+  annualInterestRate Float
+  tenureMonths       Int
+  interestType       String
+  status             String
+  startDate          DateTime?
+  remainingBalance   Float?
+}
+
+model PayrollRecord {
+  id            String   @id @default(cuid())
+  employeeId    String
+  employee      Employee @relation(fields: [employeeId], references: [id])
+  month         String
+  grossSalary   Float
+  loanDeduction Float
+  netSalary     Float
+}

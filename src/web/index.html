@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>HRMS Loan Portal</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 40px auto; }
+    input, select { display: block; margin: 8px 0; padding: 6px; width: 100%; }
+    button { padding: 8px 16px; margin-top: 10px; }
+    #result { margin-top: 20px; padding: 10px; background: #f4f4f4; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h2>Request a Loan</h2>
+  <form id="loanForm">
+    <input type="text" id="employeeId" placeholder="Employee ID" required />
+    <input type="number" id="principal" placeholder="Loan Amount" required />
+    <input type="number" id="rate" placeholder="Annual Interest Rate (e.g. 0.10)" step="0.01" required />
+    <input type="number" id="tenure" placeholder="Tenure (months)" required />
+    <select id="interestType">
+      <option value="reducing">Reducing</option>
+      <option value="flat">Flat</option>
+    </select>
+    <button type="submit">Submit Request</button>
+  </form>
+  <div id="result"></div>
+
+  <script>
+    document.getElementById('loanForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const body = {
+        id: 'l' + Date.now(),
+        employeeId: document.getElementById('employeeId').value,
+        principal: Number(document.getElementById('principal').value),
+        annualInterestRate: Number(document.getElementById('rate').value),
+        tenureMonths: Number(document.getElementById('tenure').value),
+        interestType: document.getElementById('interestType').value,
+      };
+
+      const res = await fetch('http://localhost:3000/loans', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+    });
+  </script>
+</body>
+</html>
